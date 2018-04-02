@@ -2,10 +2,11 @@
   "name": "tempnode",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "nodeServer.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./nodeServer.js --exec babel-node -e js"
+    "start":"babel-node ./nodeServer.js" 	
+    /*"start": "nodemon ./nodeServer.js --exec babel-node -e js"*/
   },
   "keywords": [],
   "author": "",
