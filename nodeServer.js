@@ -1,21 +1,27 @@
 import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
-import routes from "./src/routes/BookRouter";
+import cors from "cors";
+import questionRoute from "./src/routes/QuestionRouter";
+import userRoute from "./src/routes/UserRouter";
+// import quizRoute from "./src/routes/QuizRouter";
 
 const app = express();
 const PORT = 4000;
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/LibDB');
+mongoose.connect('mongodb://localhost:27017/QuizDB');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-
-routes(app);
+app.use(cors());
 
 app.get('/', (req, res) => {
     res.send(`Hello welcome to node with es6 ${PORT}`)
 });
+app.use('/userRoute', userRoute );
+// app.use('/quizRoute', quizRoute);
+app.use('/questionRoute', questionRoute);
+
 
 app.listen(PORT, () => 
     console.log(`Server is running on ${PORT}`)  

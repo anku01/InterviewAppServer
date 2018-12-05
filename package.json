@@ -5,8 +5,7 @@
   "main": "nodeServer.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"babel-node ./nodeServer.js" 	
-    /*"start": "nodemon ./nodeServer.js --exec babel-node -e js"*/
+    "start": "nodemon ./nodeServer.js --exec babel-node -e js"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +14,7 @@
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-0": "^6.24.1",
+    "cors": "^2.8.4",
     "express": "^4.16.2",
     "mongoose": "^5.0.11"
   },
