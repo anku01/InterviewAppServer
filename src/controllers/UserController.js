@@ -39,15 +39,16 @@ import UserModel from '../models/UserModel';
 //   }
 let userController = {
   signInAdmin: (req, res) => {
+    console.log(req.body,"signInAdmin");
     let email = req.body.email;
     let password = req.body.password;
-    UserModel.findOne({ email: email, password: password }).then(function (err, data) {
+    UserModel.findOne({ email: email, password: password, role: 'admin' }).then(function (data) {
       console.log(data);
       if (data) {
         res.send(data);
       }
       else {
-        res.send(err);
+        res.send(data);
       }
     })
 
@@ -58,19 +59,22 @@ let userController = {
     UserModel.findOne({ email: email, contact: contact }).then(function (data) {
       if (data) {
         res.send(data);
-        res.send("Candidate already Exist");
       }
       else {
         var userData={
-                    email:req.body.email,
-                    contact:req.body.contact,
+                    email: req.body.email,
+                    contact: req.body.contact,
+                    candidateIP: req.body.candidateIP || "",
+                    loginDate: req.body.loginDate
                   }
         let newUser = new UserModel(userData);
         newUser.save((err, data) => {
           if (err) {
             res.send(err);
+          }else{
+            res.send(data);
           }
-          res.send({ user: "candidate" });
+          
         });
 
       }

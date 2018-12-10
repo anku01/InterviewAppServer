@@ -4,9 +4,9 @@ import {
     getQuestions, 
     getQuestionById, 
     updateQuestion, 
-    deleteQuestion,
+    deleteQuestion
 } from "./../controllers/QuestionController";
-const app = express();
+
 const router = express.Router();
 
     console.log("in questions route");
@@ -27,6 +27,5 @@ const router = express.Router();
     .post(getQuestionById)
     .put(updateQuestion)
     .delete(deleteQuestion);
-
 
 export default router;

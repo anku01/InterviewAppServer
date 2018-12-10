@@ -19,6 +19,13 @@ const UserSchema = new User({
     type:String,
     default:"contact required",
   },
+  candidateIP:{
+    type:String,
+  },
+  loginDate:{
+    type:String,
+  },
+
 
 },{collection:'User'});
 

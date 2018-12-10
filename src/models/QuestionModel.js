@@ -15,10 +15,10 @@ const questionSchema = new question({
         type: mongoose.Schema.Types.Mixed,
         required: 'Enter the options'
     },
-    option_correct: {
-        type: String,
-        required: 'Enter the correct answer'
-    },
+    // option_correct: {
+    //     type: String,
+    //     required: 'Enter the correct answer'
+    // },
     severity: {
         type: Number,
        
