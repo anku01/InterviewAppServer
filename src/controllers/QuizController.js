@@ -28,4 +28,9 @@ const getExamQuestions = (req, res) => {
     });
 };
 
-export { getExamQuestions };
+const submitTestAndGetResult = (req, res) =>{
+    console.log(req.body);
+    res.json({quizs: "Goooood"});
+};
+
+export { getExamQuestions, submitTestAndGetResult };

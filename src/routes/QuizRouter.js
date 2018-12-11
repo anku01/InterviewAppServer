@@ -1,9 +1,11 @@
 import express from "express";
 const router = express.Router();
-import { getExamQuestions } from "./../controllers/QuizController";
+import { getExamQuestions, submitTestAndGetResult } from "./../controllers/QuizController";
 
 
 router.route('/getExamQuestions')
-    .post(getExamQuestions)
+    .post(getExamQuestions);
+router.route('/submitExam')    
+    .post(submitTestAndGetResult);
 
 export default router;
