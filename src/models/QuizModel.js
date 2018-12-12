@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 
-const question = mongoose.Schema;
 const quiz = mongoose.Schema;
 
 const quizSchema = new quiz({

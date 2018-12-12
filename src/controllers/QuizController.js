@@ -1,36 +1,35 @@
 import mongoose from 'mongoose';
 import questionSchema from '../models/QuestionModel';
 import quizSchema from '../models/QuizModel';
-const questions = mongoose.model('question', questionSchema);
-// const quiz = mongoose.model('quiz', quizSchema);
+import ExamStatSchema from '../models/ExamStat';
 
-const getExamQuestions = (req, res) => {   
-    questions.aggregate([{ $sample: {size: req.body.size} }], (err, question) => {
-        if(err){
-            console.log("in error")
-            res.send(err);
-        }else{
-            console.log("in else")
-                // let quizs = 
-                // for (var q of question) {
-                //     q._id = mongoose.mongo.ObjectId(q._id);
-                //   }
-                // quiz.insertMany( 
-                //     question
-                // );
-                if(question.length)
-                    res.json({quizs: question});
-                else
-                    res.json([]);
-            
-        }
+const startExam = (req, res) => {
+    let candidateId = req.body.candidateID;
+    let ExamStatModel = mongoose.model(candidateId, ExamStatSchema);
+    var examData = new ExamStatModel ({
+      candidateId: candidateId,
+      stats: {
         
+      }
+    });
+    examData.save(function(err) {
+      if (err) throw err;
+       
     });
 };
 
 const submitTestAndGetResult = (req, res) =>{
-    console.log(req.body);
-    res.json({quizs: "Goooood"});
+    let quiz = req.body.exam;
+    let candidateId = req.body.candidateID;;
+    mongoose.connection.db.dropCollection(candidateId, function(err, result) {
+      console.log('collection dropped');
+    });
+   
+    // mongoose.connection.collections['1234'].drop( function(err) {
+    //   console.log('collection dropped');
+    // });
+    console.log(quiz);
+    
 };
 
-export { getExamQuestions, submitTestAndGetResult };
+export { startExam, submitTestAndGetResult };

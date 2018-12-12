@@ -1,10 +1,10 @@
 import express from "express";
 const router = express.Router();
-import { getExamQuestions, submitTestAndGetResult } from "./../controllers/QuizController";
+import { startExam, submitTestAndGetResult } from "./../controllers/QuizController";
 
 
-router.route('/getExamQuestions')
-    .post(getExamQuestions);
+router.route('/startExam')
+    .post(startExam);
 router.route('/submitExam')    
     .post(submitTestAndGetResult);
 
