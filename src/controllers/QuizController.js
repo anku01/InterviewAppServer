@@ -3,6 +3,8 @@ import questionSchema from '../models/QuestionModel';
 import quizSchema from '../models/QuizModel';
 const questions = mongoose.model('question', questionSchema);
 const quiz = mongoose.model('quiz', quizSchema);
+import ExamStatSchema from '../models/ExamStat';
+import { constants } from 'os';
 
 const getExamQuestions = (req, res) => {   
 
@@ -30,13 +32,38 @@ const getExamQuestions = (req, res) => {
                     res.json([]);
             
         }
+    });
+}
+
+const startExam = (req, res) => {
+    let candidateId = req.body.candidateID;
+    let ExamStatModel = mongoose.model(candidateId, ExamStatSchema);
+    var examData = new ExamStatModel ({
+      candidateId: candidateId,
+      stats: {
         
+      }
+    });
+    examData.save(function(err) {
+      if (err) throw err;
+       
     });
 };
 
 const submitTestAndGetResult = (req, res) =>{
-    console.log(req.body);
-    res.json({quizs: "Goooood"});
+    let quiz = req.body.exam;
+    let candidateId = req.body.candidateData._id;
+    console.log(candidateId,"req.body.candidateDat");
+    mongoose.connection.db.dropCollection(candidateId, function(err, result) {
+        console.log(err);
+      console.log('collection dropped');
+    });
+   
+    // mongoose.connection.collections['1234'].drop( function(err) {
+    //   console.log('collection dropped');
+    // });
+    console.log(quiz);
+    
 };
 
-export { getExamQuestions, submitTestAndGetResult };
+export { startExam, submitTestAndGetResult , getExamQuestions};
