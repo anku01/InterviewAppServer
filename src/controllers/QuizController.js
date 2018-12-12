@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+mongoose.set('debug',true);
+
 import questionSchema from '../models/QuestionModel';
 import quizSchema from '../models/QuizModel';
 const questions = mongoose.model('question', questionSchema);
@@ -46,7 +48,7 @@ const startExam = (req, res) => {
     });
     examData.save(function(err) {
       if (err) throw err;
-       
+      return getExamQuestions({body: candidateId}, res);
     });
 };
 
@@ -54,10 +56,17 @@ const submitTestAndGetResult = (req, res) =>{
     let quiz = req.body.exam;
     let candidateId = req.body.candidateData._id;
     console.log(candidateId,"req.body.candidateDat");
-    mongoose.connection.db.dropCollection(candidateId, function(err, result) {
-        console.log(err);
-      console.log('collection dropped');
-    });
+    // console.log(req.body);
+    let ExamStatModel = mongoose.model(candidateId, ExamStatSchema);
+    try {
+         ExamStatModel.collection.drop();
+      } catch (e) {
+        if (e.code === 26) {
+          console.log('namespace %s not found',ExamStatModel.collection.name)
+        } else {
+          throw e;
+        }
+      }
    
     // mongoose.connection.collections['1234'].drop( function(err) {
     //   console.log('collection dropped');
