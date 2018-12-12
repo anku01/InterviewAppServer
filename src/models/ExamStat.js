@@ -10,6 +10,7 @@ const ExamStatSchema = new Schema({
   stats:{
     type: Schema.Types.Mixed
   },
+  startTimeAndDate: Date
 
 
 });

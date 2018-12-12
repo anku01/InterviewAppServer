@@ -44,7 +44,8 @@ const startExam = (req, res) => {
       candidateId: candidateId,
       stats: {
         
-      }
+      },
+      startTimeAndDate: Date.now()
     });
     examData.save(function(err) {
       if (err) throw err;
@@ -67,10 +68,6 @@ const submitTestAndGetResult = (req, res) =>{
           throw e;
         }
       }
-   
-    // mongoose.connection.collections['1234'].drop( function(err) {
-    //   console.log('collection dropped');
-    // });
     console.log(quiz);
     
 };
