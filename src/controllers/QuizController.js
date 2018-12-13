@@ -2,70 +2,61 @@ import mongoose from 'mongoose';
 mongoose.set('debug',true);
 
 import questionSchema from '../models/QuestionModel';
-import quizSchema from '../models/QuizModel';
 const questions = mongoose.model('question', questionSchema);
-const quiz = mongoose.model('quiz', quizSchema);
 import ExamStatSchema from '../models/ExamStat';
 import { constants } from 'os';
 
 const getExamQuestions = (req, res) => {   
 
-    //temprary ids array
-    let questionsIds = ['5c076b2150186c09ad6e1c1a', '5c076e6a50186c09ad6e1c1b', '5c08b48a0b96f2bdc082df45', '5c08c2a7dd892e1288ed222c'];
-
-    questions.aggregate([
-        { $match: { _id: { $nin: questionsIds } } },
-        { $sample: {size: 1} }], (err, question) => {
-        if(err){
-            console.log("in error");
-            res.send(err);
-        }else{
-            console.log("in else");
+    let candidateId = req.body;
+    let ExamStatModel = mongoose.model(candidateId, ExamStatSchema, candidateId);
+    let questionsIds = [];
+    ExamStatModel.find({}, function(err, examStat) {
+        examStat.forEach(function(stat) {
+            questionsIds.push(stat._id);
+        });
+        console.log('ids ', questionsIds);
+        questions.aggregate([
+            { $match: { _id: { $nin: questionsIds } } },
+            { $sample: {size: 1} }], (err, question) => {
+            if(err){
+                console.log("in error");
+                res.send(err);
+            } else {
                 for (var q of question) {
                     q._id = mongoose.mongo.ObjectId(q._id);
                     q.candidateID = req.body.candidateID
-                  }
-                quiz.insertMany( 
-                    question
-                );
+                    }
                 if(question.length)
                     res.json({quizs: question});
                 else
                     res.json([]);
-            
-        }
+                
+            }
+        });
     });
+
+    
 }
 
 const startExam = (req, res) => {
     let candidateId = req.body.candidateID;
-    mongoose.connection.db.listCollections({name: candidateId})
+    mongoose.connection.db.listCollections({name: candidateId + 's'})
     .next(function(err, collinfo) {
+        console.log('*******', collinfo)
         if (collinfo) {
-            collinfo.remove({}, function(){
-                console.log('collection empty')
+            mongoose.connection.collection(candidateId + 's').remove({}, function(){
+                console.log('collection empty');
             })
-            // The collection exists
         }
-    });
-    let ExamStatModel = mongoose.model(candidateId, ExamStatSchema);
-    var examData = new ExamStatModel ({
-      candidateId: candidateId,
-      stats: {
-        
-      },
-      startTimeAndDate: Date.now()
-    });
-    examData.save(function(err) {
-      if (err) throw err;
-      return getExamQuestions({body: candidateId}, res);
+        return getExamQuestions({body: candidateId}, res);
     });
 };
 
 const submitTestAndGetResult = (req, res) =>{
     let candidateId = req.body.candidateData._id;
     console.log(candidateId,"req.body.candidateDat");
-    let ExamStatModel = mongoose.model(candidateId, ExamStatSchema);
+    let ExamStatModel = mongoose.model(candidateId, ExamStatSchema, candidateId);
     try {
          ExamStatModel.collection.drop();
       } catch (e) {
@@ -80,7 +71,32 @@ const submitTestAndGetResult = (req, res) =>{
 
 const getNextQuestion = (req, res) =>{
     let candidateId = req.body.candidateID;
-    return getExamQuestions({body: candidateId}, res);
+    let stats = {
+        _id: req.body.stats.question[0]._id,
+        question: req.body.stats.question[0]
+    };
+    let ExamStatModel = mongoose.model(candidateId, ExamStatSchema, candidateId);
+    var examData = new ExamStatModel (stats);
+    ExamStatModel.findById(stats._id, function (err, question) {
+        if (err) throw err;
+        if(question){
+            console.log('inside null')
+            question.question = stats.question;
+            question.save(function(err, data) {
+                if (err) throw err;
+                return getExamQuestions({body: candidateId}, res);
+            })  
+        } else{
+            examData.save(function(err) {
+                if (err) throw err;
+                return getExamQuestions({body: candidateId}, res);
+            });
+        }
+        
+      });
+
+    
+
 };
 
 export { startExam, submitTestAndGetResult, getNextQuestion};

@@ -3,14 +3,11 @@ var Schema = mongoose.Schema;
 
 const ExamStatSchema = new Schema({
   // _id: Schema.Types.ObjectId,
-  candidateId:{
-    type:String,
-    required: true
-  },
-  stats:{
+  
+  question:{
     type: Schema.Types.Mixed
-  },
-  startTimeAndDate: Date
+  }
+  
 
 
 });
