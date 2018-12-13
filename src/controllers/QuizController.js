@@ -39,6 +39,15 @@ const getExamQuestions = (req, res) => {
 
 const startExam = (req, res) => {
     let candidateId = req.body.candidateID;
+    mongoose.connection.db.listCollections({name: candidateId})
+    .next(function(err, collinfo) {
+        if (collinfo) {
+            collinfo.remove({}, function(){
+                console.log('collection empty')
+            })
+            // The collection exists
+        }
+    });
     let ExamStatModel = mongoose.model(candidateId, ExamStatSchema);
     var examData = new ExamStatModel ({
       candidateId: candidateId,
@@ -54,10 +63,8 @@ const startExam = (req, res) => {
 };
 
 const submitTestAndGetResult = (req, res) =>{
-    let quiz = req.body.exam;
     let candidateId = req.body.candidateData._id;
     console.log(candidateId,"req.body.candidateDat");
-    // console.log(req.body);
     let ExamStatModel = mongoose.model(candidateId, ExamStatSchema);
     try {
          ExamStatModel.collection.drop();
@@ -68,8 +75,12 @@ const submitTestAndGetResult = (req, res) =>{
           throw e;
         }
       }
-    console.log(quiz);
-    
+      res.send('Submitted');
 };
 
-export { startExam, submitTestAndGetResult , getExamQuestions};
+const getNextQuestion = (req, res) =>{
+    let candidateId = req.body.candidateID;
+    return getExamQuestions({body: candidateId}, res);
+};
+
+export { startExam, submitTestAndGetResult, getNextQuestion};
