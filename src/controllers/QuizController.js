@@ -10,6 +10,7 @@ const getExamQuestions = (req, res) => {
 
     let candidateId = req.body.candidateId;
     let questionId = req.body.questionId;
+    console.log('***', req.body)
     let ExamStatModel = mongoose.model(candidateId, ExamStatSchema, candidateId);
     if (questionId) {
         ExamStatModel.findById(questionId, function (err, question) {
@@ -56,7 +57,10 @@ const startExam = (req, res) => {
                 console.log('collection empty');
             })
         }
-        return getExamQuestions({body: candidateId}, res);
+        return getExamQuestions({body: {
+            candidateId: candidateId,
+            questionId: req.body.questionId
+        }}, res);
     });
 };
 
