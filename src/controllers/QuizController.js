@@ -8,42 +8,49 @@ import { constants } from 'os';
 
 const getExamQuestions = (req, res) => {   
 
-    let candidateId = req.body;
+    let candidateId = req.body.candidateId;
+    let questionId = req.body.questionId;
     let ExamStatModel = mongoose.model(candidateId, ExamStatSchema, candidateId);
-    let questionsIds = [];
-    ExamStatModel.find({}, function(err, examStat) {
-        examStat.forEach(function(stat) {
-            questionsIds.push(stat._id);
+    if (questionId) {
+        ExamStatModel.findById(questionId, function (err, question) {
+            if (err) throw err;
+            if(question.length)
+                res.json({quizs: question});
+            
+          });
+    } else {
+        let questionsIds = [];
+        ExamStatModel.find({}, function(err, examStat) {
+            examStat.forEach(function(stat) {
+                questionsIds.push(stat._id);
+            });
+            console.log('ids ', questionsIds);
+            questions.aggregate([
+                { $match: { _id: { $nin: questionsIds } } },
+                { $sample: {size: 1} }], (err, question) => {
+                if(err){
+                    console.log("in error");
+                    res.send(err);
+                } else {
+                    for (var q of question) {
+                        q._id = mongoose.mongo.ObjectId(q._id);
+                        q.candidateID = req.body.candidateID
+                        }
+                    if(question.length)
+                        res.json({quizs: question});
+                    else
+                        res.json([]);
+                    
+                }
+            });
         });
-        console.log('ids ', questionsIds);
-        questions.aggregate([
-            { $match: { _id: { $nin: questionsIds } } },
-            { $sample: {size: 1} }], (err, question) => {
-            if(err){
-                console.log("in error");
-                res.send(err);
-            } else {
-                for (var q of question) {
-                    q._id = mongoose.mongo.ObjectId(q._id);
-                    q.candidateID = req.body.candidateID
-                    }
-                if(question.length)
-                    res.json({quizs: question});
-                else
-                    res.json([]);
-                
-            }
-        });
-    });
-
-    
+    }
 }
 
 const startExam = (req, res) => {
     let candidateId = req.body.candidateID;
     mongoose.connection.db.listCollections({name: candidateId + 's'})
     .next(function(err, collinfo) {
-        console.log('*******', collinfo)
         if (collinfo) {
             mongoose.connection.collection(candidateId + 's').remove({}, function(){
                 console.log('collection empty');
@@ -84,12 +91,22 @@ const getNextQuestion = (req, res) =>{
             question.question = stats.question;
             question.save(function(err, data) {
                 if (err) throw err;
-                return getExamQuestions({body: candidateId}, res);
+                return getExamQuestions({
+                    body: {
+                        candidateId: candidateId,
+                        questionId: req.body.questionId
+                    }
+                }, res);
             })  
         } else{
             examData.save(function(err) {
                 if (err) throw err;
-                return getExamQuestions({body: candidateId}, res);
+                return getExamQuestions({
+                    body: {
+                        candidateId: candidateId,
+                        questionId: req.body.questionId
+                    }
+                }, res);
             });
         }
         
