@@ -15,8 +15,9 @@ const getExamQuestions = (req, res) => {
     if (questionId) {
         ExamStatModel.findById(questionId, function (err, question) {
             if (err) throw err;
-            if(question.length)
-                res.json({quizs: question});
+            console.log(question,"###############");
+            if(question)
+                res.json({quizs: [question.question]});
             
           });
     } else {
