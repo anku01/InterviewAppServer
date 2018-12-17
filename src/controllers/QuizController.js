@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import async from 'async';
 mongoose.set('debug',true);
 
 import questionSchema from '../models/QuestionModel';
@@ -15,7 +16,7 @@ const getExamQuestions = (req, res) => {
     if (questionId) {
         ExamStatModel.findById(questionId, function (err, question) {
             if (err) throw err;
-            console.log(question,"###############");
+            // console.log(question,"###############");
             if(question)
                 res.json({quizs: [question.question]});
             
@@ -26,12 +27,12 @@ const getExamQuestions = (req, res) => {
             examStat.forEach(function(stat) {
                 questionsIds.push(stat._id);
             });
-            console.log('ids ', questionsIds);
+            // console.log('ids ', questionsIds);
             questions.aggregate([
                 { $match: { _id: { $nin: questionsIds } } },
                 { $sample: {size: 1} }], (err, question) => {
                 if(err){
-                    console.log("in error");
+                    // console.log("in error");
                     res.send(err);
                 } else {
                     for (var q of question) {
@@ -55,7 +56,7 @@ const startExam = (req, res) => {
     .next(function(err, collinfo) {
         if (collinfo) {
             mongoose.connection.collection(candidateId + 's').remove({}, function(){
-                console.log('collection empty');
+                // console.log('collection empty');
             })
         }
         return getExamQuestions({body: {
@@ -67,18 +68,32 @@ const startExam = (req, res) => {
 
 const submitTestAndGetResult = (req, res) =>{
     let candidateId = req.body.candidateData._id;
-    console.log(candidateId,"req.body.candidateDat");
+    let score = 0;
+    let totalQuestions = 15;
+
+    // console.log(candidateId,"req.body.candidateDat");
     let ExamStatModel = mongoose.model(candidateId, ExamStatSchema, candidateId);
-    try {
-         ExamStatModel.collection.drop();
-      } catch (e) {
-        if (e.code === 26) {
-          console.log('namespace %s not found',ExamStatModel.collection.name)
-        } else {
-          throw e;
-        }
-      }
-      res.send('Submitted');
+    
+        ExamStatModel.find({}, function(err, examStat) {
+            totalQuestions = examStat.length;
+            async.eachSeries(examStat, (qtion, callback) => {
+                    // console.log(qtion,"examStat");
+                    qtion.question.options.forEach(function (opn, index) {
+                        // console.log(qtion.question.answer,"opn.answer===index", index, "===key", opn.isCorrect)
+                        if(qtion.question.answer===index &&  opn.isCorrect ===true){
+                            score = score + 1
+                        }
+                        // console.log(sandwich);
+                    });
+                    callback();
+            }, err => {
+                if (err) res.json(err);
+                res.json({score: score, totalQuestions: totalQuestions });
+            });
+        });
+        //  ExamStatModel.collection.drop();
+         
+     
 };
 
 const getNextQuestion = (req, res) =>{
@@ -92,7 +107,7 @@ const getNextQuestion = (req, res) =>{
     ExamStatModel.findById(stats._id, function (err, question) {
         if (err) throw err;
         if(question){
-            console.log('inside null')
+            // console.log('inside null')
             question.question = stats.question;
             question.save(function(err, data) {
                 if (err) throw err;
