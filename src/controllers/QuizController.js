@@ -4,6 +4,10 @@ mongoose.set('debug',true);
 
 import questionSchema from '../models/QuestionModel';
 const questions = mongoose.model('question', questionSchema);
+
+import ExamResultSchema from '../models/ExamResultModel';
+const ExamResult = mongoose.model('ExamResult', ExamResultSchema);
+
 import ExamStatSchema from '../models/ExamStat';
 import { constants } from 'os';
 
@@ -11,12 +15,10 @@ const getExamQuestions = (req, res) => {
 
     let candidateId = req.body.candidateId;
     let questionId = req.body.questionId;
-    console.log('***', req.body)
     let ExamStatModel = mongoose.model(candidateId, ExamStatSchema, candidateId);
     if (questionId) {
         ExamStatModel.findById(questionId, function (err, question) {
             if (err) throw err;
-            // console.log(question,"###############");
             if(question)
                 res.json({quizs: [question.question]});
             
@@ -27,12 +29,10 @@ const getExamQuestions = (req, res) => {
             examStat.forEach(function(stat) {
                 questionsIds.push(stat._id);
             });
-            // console.log('ids ', questionsIds);
             questions.aggregate([
                 { $match: { _id: { $nin: questionsIds } } },
                 { $sample: {size: 1} }], (err, question) => {
                 if(err){
-                    // console.log("in error");
                     res.send(err);
                 } else {
                     for (var q of question) {
@@ -68,6 +68,9 @@ const startExam = (req, res) => {
 
 const submitTestAndGetResult = (req, res) =>{
     let candidateId = req.body.candidateData._id;
+    let email = req.body.candidateData.email;
+    let contact = req.body.candidateData.contact;
+
     let score = 0;
     let totalQuestions = 15;
 
@@ -88,7 +91,18 @@ const submitTestAndGetResult = (req, res) =>{
                     callback();
             }, err => {
                 if (err) res.json(err);
-                res.json({score: score, totalQuestions: totalQuestions });
+                let ResultData = new ExamResult({
+                    candidateId: candidateId,
+                    score: score, 
+                    contact: contact,
+                    email: email,
+                    totalQuestions: totalQuestions,
+                    submitedOn: new Date()
+                });
+                ResultData.save(function(err) {
+                    if (err) throw err;
+                    res.json({candidateId: candidateId, score: score, totalQuestions: totalQuestions });
+                });
             });
         });
         //  ExamStatModel.collection.drop();

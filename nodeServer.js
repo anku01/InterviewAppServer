@@ -5,6 +5,7 @@ import cors from "cors";
 import questionRoute from "./src/routes/QuestionRouter";
 import userRoute from "./src/routes/UserRouter";
 import quizRoute from "./src/routes/QuizRouter";
+import examResultRoute from "./src/routes/ExamResultRouter";
 
 const app = express();
 const PORT = 4000;
@@ -22,6 +23,7 @@ app.get('/', (req, res) => {
 app.use('/userRoute', userRoute );
 app.use('/quizRoute', quizRoute);
 app.use('/questionRoute', questionRoute);
+app.use('/exam', examResultRoute);
 
 
 app.listen(PORT, () => 
