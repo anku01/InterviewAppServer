@@ -9,8 +9,6 @@ import {
 
 const router = express.Router();
 
-    console.log("in questions route");
-
     // router.get('/adminLogin',(req, res, next)=>{
 //   console.log("Response Received");
 // })
