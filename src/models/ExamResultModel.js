@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Mongoose } from 'mongoose';
 var Schema = mongoose.Schema;
 
 const ExamResultchema = new Schema({
@@ -19,6 +19,9 @@ const ExamResultchema = new Schema({
     },
     submitedOn: {
         type: String
+    },
+    testData: {
+        type: Schema.Types.Mixed
     }
 
 

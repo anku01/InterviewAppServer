@@ -15,15 +15,10 @@ const getExamResults = (req, res) => {
 
 const getExamDetails = (req, res) => { 
 
-    let candidateId = req.body.candidateId;
-    let ExamStatModel = mongoose.model(candidateId, ExamStatSchema, candidateId);
-
-    ExamStatModel.find({}, function(err, examStat) {
-        if(err) throw err;
-        examResults.find({candidateId: candidateId}, function(err1, candidateData) {
-            if(err1) throw err1;
-            res.json({examStat:examStat, candidateData });
-        });
+    let testId = req.body.testId;
+    examResults.findById(testId, function(err1, candidateData) {
+        if(err1) throw err1;
+        res.json({candidateData:candidateData});
     });
 
 };

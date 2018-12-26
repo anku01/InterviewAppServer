@@ -89,13 +89,15 @@ const submitTestAndGetResult = (req, res) =>{
                     callback();
             }, err => {
                 if (err) res.json(err);
+                
                 let ResultData = new ExamResult({
                     candidateId: candidateId,
                     score: score, 
                     contact: contact,
                     email: email,
                     totalQuestions: totalQuestions,
-                    submitedOn: new Date()
+                    submitedOn: new Date(),
+                    testData: examStat
                 });
                 ResultData.save(function(err) {
                     if (err) throw err;
