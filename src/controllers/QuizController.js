@@ -105,7 +105,7 @@ const submitTestAndGetResult = (req, res) =>{
                 });
             });
         });
-        //  ExamStatModel.collection.drop();
+        ExamStatModel.collection.drop();
          
      
 };
