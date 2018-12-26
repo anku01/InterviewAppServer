@@ -55,8 +55,7 @@ const startExam = (req, res) => {
     mongoose.connection.db.listCollections({name: candidateId})
     .next(function(err, collinfo) {
         if (collinfo) {
-            mongoose.connection.collection(candidateId).remove({}, function(){
-        })
+            mongoose.connection.collection(candidateId).remove({}, function(){})
         }
         return getExamQuestions({body: {
             candidateId: candidateId,
