@@ -52,12 +52,11 @@ const getExamQuestions = (req, res) => {
 
 const startExam = (req, res) => {
     let candidateId = req.body.candidateID;
-    mongoose.connection.db.listCollections({name: candidateId + 's'})
+    mongoose.connection.db.listCollections({name: candidateId})
     .next(function(err, collinfo) {
         if (collinfo) {
-            mongoose.connection.collection(candidateId + 's').remove({}, function(){
-                // console.log('collection empty');
-            })
+            mongoose.connection.collection(candidateId).remove({}, function(){
+        })
         }
         return getExamQuestions({body: {
             candidateId: candidateId,
