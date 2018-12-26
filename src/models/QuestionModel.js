@@ -6,10 +6,19 @@ const questionSchema = new question({
     q_type: {
         type: String,
         required: 'select the answer type'
-       },
-    q_text: {
-        type: String,
-        required: 'Enter the book title.'
+    },
+    question: {
+        text: {
+            type: String,
+            required: 'Question is required.'
+        },
+        hasCode: {
+            type: Boolean,
+            default: true
+        },
+        code: {
+            type: String
+        }
     },
     options: {
         type: mongoose.Schema.Types.Mixed,

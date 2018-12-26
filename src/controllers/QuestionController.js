@@ -3,7 +3,6 @@ import questionSchema from '../models/QuestionModel';
 
 const questions = mongoose.model('question', questionSchema);
 const addaQuestion = (req, res) => {
-    console.log("added question", req.body.options);
     if(req.body.options){
         req.body.options = JSON.stringify(req.body.options)
     }
