@@ -76,9 +76,9 @@ const submitTestAndGetResult = (req, res) =>{
     let ExamStatModel = mongoose.model(candidateId, ExamStatSchema, candidateId);
     
         ExamStatModel.find({}, function(err, examStat) {
-            totalQuestions = examStat.length;
+            totalQuestions = req.body.totalNoOfQuestions;
             async.eachSeries(examStat, (qtion, callback) => {
-                    // console.log(qtion,"examStat");
+                    console.log(examStat,"examStat");
                     qtion.question.options.forEach(function (opn, index) {
                         // console.log(qtion.question.answer,"opn.answer===index", index, "===key", opn.isCorrect)
                         if(qtion.question.answer===index &&  opn.isCorrect ===true){
