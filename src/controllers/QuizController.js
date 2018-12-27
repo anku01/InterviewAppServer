@@ -78,7 +78,6 @@ const submitTestAndGetResult = (req, res) =>{
         ExamStatModel.find({}, function(err, examStat) {
             totalQuestions = req.body.totalNoOfQuestions;
             async.eachSeries(examStat, (qtion, callback) => {
-                    console.log(examStat,"examStat");
                     qtion.question.options.forEach(function (opn, index) {
                         // console.log(qtion.question.answer,"opn.answer===index", index, "===key", opn.isCorrect)
                         if(qtion.question.answer===index &&  opn.isCorrect ===true){
@@ -102,13 +101,11 @@ const submitTestAndGetResult = (req, res) =>{
                 });
                 ResultData.save(function(err) {
                     if (err) throw err;
+                    ExamStatModel.collection.drop();
                     res.json({candidateId: candidateId, score: score, totalQuestions: totalQuestions });
                 });
             });
         });
-        ExamStatModel.collection.drop();
-         
-     
 };
 
 const getNextQuestion = (req, res) =>{
