@@ -22,6 +22,10 @@ const ExamResultchema = new Schema({
     },
     testData: {
         type: Schema.Types.Mixed
+    },
+    isDeleted:{
+        type: Number,
+        default: 0
     }
 
 

@@ -97,7 +97,8 @@ const submitTestAndGetResult = (req, res) =>{
                     email: email,
                     totalQuestions: totalQuestions,
                     submitedOn: new Date(),
-                    testData: examStat
+                    testData: examStat,
+                    isDeleted: 0
                 });
                 ResultData.save(function(err) {
                     if (err) throw err;
